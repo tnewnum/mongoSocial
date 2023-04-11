@@ -41,10 +41,41 @@ module.exports = {
     },
     //create a thought
     createThought(req, res) {
+        // Validate the request body
+        const { thoughtText, userName, reactions } = req.body;
+        const errors = {};
+      
+        if (!thoughtText) {
+          errors.thoughtText = 'Thought text is required';
+        }
+      
+        if (!userName) {
+          errors.userName = 'User name is required';
+        }
+      
+        if (reactions && Array.isArray(reactions)) {
+          reactions.forEach((reaction, index) => {
+            if (!reaction.reactionBody) {
+              errors[`reactions.${index}.reactionBody`] = 'Reaction body is required';
+            }
+      
+            if (!reaction.userName) {
+              errors[`reactions.${index}.userName`] = 'User name is required';
+            }
+          });
+        }
+      
+        // If there are validation errors, return a 400 status code with the error object
+        if (Object.keys(errors).length > 0) {
+          return res.status(400).json({ errors });
+        }
+      
+        // Create the thought
         Thought.create(req.body)
-        .then((thought) => res.json(thought))
-        .catch((err) => res.status(500).json(err));
-    },
+          .then((thought) => res.json(thought))
+          .catch((err) => res.status(500).json(err));
+      },
+      
     //Delete a thought
     deleteThought(req, res) {
         Thought.findOneAndRemove({ _id: req.params.thoughtId })
