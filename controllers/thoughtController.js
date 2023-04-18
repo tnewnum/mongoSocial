@@ -5,25 +5,25 @@ const { Thought, User } = require('../models');
 const thoughtCount = async () =>
   Thought.aggregate()
     .count('thoughtCount')
-    .then((numberOfTHoughts) => numberOfTHoughts);
+    .then((numberOfThoughts) => numberOfThoughts);
 
 
 module.exports = {
     //get all thoughts
-    getThoughts(req, res) {
-        Thought.find()
-            .then(async (thoughts) => {
-                const thoughtObj = {
-                    thoughts,
-                    thoughtCount: await thoughtCount()
-                };
-                return res.json(thoughtObj)
-            })
-            .catch((err) => {
-                console.log(err)
-                return res.status(500).json(err);
-            });
-    },
+     // get all thoughts
+  async getThoughts(req, res) {
+    try {
+      const thoughts = await Thought.find({});
+      const thoughtObj = {
+        thoughts,
+        thoughtCount: await thoughtCount(),
+      };
+      return res.json(thoughtObj);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+  },
     //get a single thought
     getSingleThought(req, res) {
         Thought.findOne({_id: req.params.thoughtId})
