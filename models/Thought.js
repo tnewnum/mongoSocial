@@ -22,7 +22,7 @@ const reactionSchema = new mongoose.Schema({
   }
 });
 
-const thoughtSchema = new Schema (
+const thoughtSchema = new mongoose.Schema (
     {
         thoughtText: {
             type: String,
