@@ -28,7 +28,7 @@ module.exports = {
     async createUser(req, res) {
         try {
             const newUser = await User.create(req.body)
-            res.json(`${newUser} has been created`)
+            res.json(`New User has been created`)
 
         } catch (err) {
             res.status(500).json(err)
@@ -41,7 +41,7 @@ module.exports = {
         try {
             const user = await User.findOneAndRemove({_id: req.params.id})
             if (!user) return res.status(404).json({ message: 'No user with that ID' });
-            res.json(`${user} has been deleted`)
+            res.json('User has been deleted')
 
         } catch (err) {
            res.status(500).json(err)

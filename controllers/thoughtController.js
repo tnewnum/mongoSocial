@@ -28,22 +28,31 @@ module.exports = {
         
         
   //create a thought
-    async createThought(req, res) {
-      try {
-        const user = await User.findOne({userName: req.body.userName});
-
-        if (!user) return res.status(400).json({ message: 'User not Found' });
-
-        const thought = await Thought.create(req.body)
-
-        await User.findByIdAndUpdate(user._id, {
-          $push: {thoughts: thought}
-        })
-        
-      } catch (err) {
+  async createThought(req, res) {
+    try {
+      const user = await User.findOne({ userName: req.body.userName });
+  
+      if (!user) {
+        return res.status(400).json({ message: 'User not found' });
+      }
+  
+      const thought = new Thought({
+        thoughtText: req.body.thoughtText,
+        userName: req.body.userName,
+      });
+  
+      // Add the newly created thought to the user's list of thoughts
+      user.thoughts.push(thought);
+  
+      // Save the user and thought to the database
+      await Promise.all([thought.save(), user.save()]);
+  
+      res.json(thought);
+    } catch (err) {
       res.status(500).json(err);
     }
   },
+  
 
   //Delete a thought
    async deleteThought(req, res) {
