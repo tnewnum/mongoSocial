@@ -15,13 +15,15 @@ module.exports = {
     //get a single user
     async getSingleUser(req, res) {
         try {
-        const user = await User.findOne({_id: req.params.id})
-        if (!user) return res.status(404).json({message: 'No user with that ID'})
-        res.json(user)
-
+            const user = await User.findById(req.params.id).populate('friends', 'userName');
+            if (!user) {
+                return res.status(404).json({ message: 'No user found with that ID' });
+            }
+            const friendNames = user.friends.map((friend) => friend.userName);
+            res.json({ userName: user.userName, email: user.email, friends: friendNames });
         } catch (err) {
-            res.status(500).json(err);
-        } 
+            res.status(500).json({ message: err.message });
+        }
     },
 
     //create a user
@@ -67,24 +69,25 @@ module.exports = {
     },
     async newFriend(req, res) {
         try {
-            const user = await User.findOne({ _id: req.params.id });
-            if (!user) return res.status(404).json({ message: 'No user with that ID' });
-
-            const friend = await User.findOne({ _id: req.params.friendId });
-            if (!friend) return res.status(404).json({ message: 'No friend with that ID' });
-
-            if (user.friends.some((friendId) => friendId.equals(friend._id))) return res.status(400).json({ message: 'They are already your friend' });
-
-            const result = await User.findByIdAndUpdate(user._id, {
-                $push: { friends: friend }
-            });
-            res.json(result);
+          const user = await User.findById(req.params.id);
+          if (!user) return res.status(404).json({ message: 'No user with that ID' });
+      
+          const friend = await User.findOne({ userName: req.body.userName });
+          if (!friend) return res.status(404).json({ message: 'No friend found with that username' });
+      
+          if (user.friends.some((friendId) => friendId.equals(friend._id))) {
+            return res.status(400).json({ message: 'They are already your friend' });
+          }
+      
+          const result = await User.findByIdAndUpdate(user._id, {
+            $push: { friends: friend }
+          });
+          res.json(result);
+        } catch (err) {
+          res.status(500).json(err);
         }
-        catch (err) {
-            res.status(500).json(err);
-        }
-    },
-
+      },
+      
     async removeFriend(req, res) {
         try {
             const user = await User.findOne({ _id: req.params.id });
