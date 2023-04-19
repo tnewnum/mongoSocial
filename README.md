@@ -19,7 +19,10 @@ Need to install dateformat, Express, and Mongoose.
 
 ## Usage
 
-Insure you install your dependencies and then from the command line launch the program with "npm run start". This will get the server up and running, and then routes can be tested using Insomnia. See attached walk through for more details.
+Insure you install your dependencies and then from the command line launch the program with "npm run start". This will get the server up and running, and then routes can be tested using Insomnia. See below link to walk through for more details.
+
+https://drive.google.com/file/d/184npMZ3Yp3NcXcLq0alT8OXI74b8Zm3u/view?usp=share_link
+
 
 ## 🔒 License
 
